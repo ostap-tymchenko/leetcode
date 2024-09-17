@@ -11,24 +11,46 @@ fn main() {
     dbg!(candy(example_1));
 }
 
-fn usize_to_i32(u: usize) -> i32 {
-    u as i32
-}
-
 fn i32_to_usize(i: i32) -> usize {
-    match i {
-        (i <= 0) => 0;
-        _ => i as usize;
+    if i <= 0 {
+        0
+    } else {
+        i as usize
     }
 }
 
 pub fn candy(ratings: Vec<i32>) -> i32 {
-    for child in ratings {
-        let left_child: i32 = ratings[child as i32 - 1];
-        let right_child: i32 = ratings[child as i32 + 1];
+    let mut candy = 0;
 
-        dbg!(child, left_child, right_child);
+    for (child_num, rate) in ratings.iter().enumerate() {
+        let mut number_of_candy_for_this_child = 0;
+
+        let left_child_rate: &i32 = &ratings.get(i32_to_usize(child_num as i32 - 1)).unwrap_or(&0);
+        let right_child_rate: &i32 = &ratings.get(i32_to_usize(child_num as i32 + 1)).unwrap_or(&0);
+
+        let mut top = rate;
+        let mut bottom = rate;
+
+        if left_child_rate > top {
+            top = left_child_rate;
+        } else if left_child_rate < top {
+            bottom = left_child_rate;
+        }
+
+        if right_child_rate > top {
+            top = right_child_rate;
+        } else if left_child_rate < top {
+            bottom =right_child_rate;
+        }
+
+        if rate == top {
+            // Heighest case
+        } else if  rate == bottom {
+            // Lowest case
+            number_of_candy_for_this_child = 1;
+        }
+
     }
 
-    todo!();
+    candy
 }
