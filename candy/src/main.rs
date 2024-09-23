@@ -1,12 +1,8 @@
-// There are n children standing in a line. Each child is assigned a rating value given in the integer array ratings.
-//
-// You are giving candies to these children subjected to the following requirements:
-//
-// Each child must have at least one candy.
-// Children with a higher rating get more candies than their neighbors.
-// Return the minimum number of candies you need to have to distribute the candies to the children.
+use std::fs;
+use std::path::Path;
 
-use std::usize;
+const DATA_FOLDER: &str = "data";
+const FOLDER_SPLIT: &str = "/";
 
 fn i32_to_usize(i: i32) -> usize {
     if i <= 0 {
@@ -16,85 +12,90 @@ fn i32_to_usize(i: i32) -> usize {
     }
 }
 
-fn main() {
-    let example_1 = vec![1, 5, 2,];
-    dbg!(candy(example_1));
+fn read_data_from_name(file_name: &str) -> String {
+    let path = DATA_FOLDER.to_owned() + FOLDER_SPLIT + file_name;
+    fs::read_to_string(Path::new(&path))
+        .unwrap_or_else(|_| {panic!("data parse fail, looking for {file_name}")})
 }
 
-// fn determine_current_child_candy(ratings: Vec<i32>, child_num: usize) -> i32 {
-//     let mut give_candy = 0;
-//
-//     let rate = ratings[child_num];
-//     dbg!(rate);
-//
-//     let left_child_rate: &i32 = &ratings
-//         .get(i32_to_usize(child_num as i32 - 1))
-//         .unwrap_or(&0);
-//     let right_child_rate: &i32 = &ratings
-//         .get(i32_to_usize(child_num as i32 + 1))
-//         .unwrap_or(&0);
-//
-//     if rate == 0 {
-//         give_candy = 1;
-//     } 
-//
-//     println!("START rate:{rate}");
-//
-//     if rate > *left_child_rate && rate > *right_child_rate && child_num != 0 && child_num + 1 != ratings.len() {
-//         if *left_child_rate == 0 {
-//             println!("END rate:2, A");
-//             return 2;
-//         } else {
-//             println!("END rate:{}, B", left_child_rate + 1);
-//             return left_child_rate + 1;
-//         }
-//     } else if rate > *left_child_rate && child_num != 0 {
-//         if *left_child_rate == 0 {
-//             println!("END rate:2, C");
-//             return 2;
-//         } else {
-//             println!("END rate:{}, D", left_child_rate +1);
-//             return left_child_rate + 1;
-//         }
-//     } else if rate > *right_child_rate && child_num + 1 != ratings.len() {
-//         dbg!(ratings.len(), child_num);
-//
-//         if *right_child_rate == 0 {
-//             println!("END rate:2, E");
-//             return 2;
-//         } else {
-//             println!("END rate:{}, F", right_child_rate +1);
-//             return right_child_rate + 1;
-//         }
-//     } else {
-//         println!("END rate:1, G");
-//         return 1;
-//     }
-// }
+fn main() {
+    // let mut example = Vec::new();
+    //
+    // for word in read_data_from_name("large-data.txt").split_whitespace() {
+    //     example.push(word.parse().unwrap());
+    // }
 
-fn layered_increase_strategy(ratings: Vec<i32>) -> i32 {
+    let example = vec![0,1,2,3,9,4,1];
 
-    let candy_array = vec![1;ratings.len()];
-
-    dbg!(&candy_array);
-
-    for (child_num, current_rate) in ratings.iter().enumerate() {
-
-        let left_rate: &i32 = &ratings
-            .get(i32_to_usize(child_num as i32 - 1))
-            .unwrap_or(&-1);
-
-        let right_rate: &i32 = &ratings
-            .get(i32_to_usize(child_num as i32 + 1))
-            .unwrap_or(&-1);
-        }
-
-    candy_array.iter().sum()
+    dbg!(candy(example));
 }
 
 pub fn candy(ratings: Vec<i32>) -> i32 {
-    layered_increase_strategy(ratings)
+    double_sided_increment_strategy(ratings)
 }
+
+fn double_sided_increment_strategy(ratings: Vec<i32>) -> i32 {
+    let mut candies = vec![1; ratings.len()];
+
+    for (index, rate) in ratings.iter().enumerate() {
+        if index != 0 {
+            if *rate > ratings[index - 1] {
+                if candies[index] <= candies[index - 1] {
+                    candies[index] = candies[index - 1] + 1;
+                }
+            }
+        }
+    }
+
+    for (mut index, rate) in ratings.iter().rev().enumerate() {
+        // dbg!(index);
+        index = ratings.len() - index -1;
+
+        if index != ratings.len() -1 {
+            // dbg!(index);
+            // dbg!(ratings.len());
+            if *rate > ratings[index + 1] {
+                if candies[index] <= candies[index + 1] {
+                    candies[index] = candies[index + 1] + 1;
+                }
+            }
+        }
+    }
+
+    // dbg!(&ratings);
+    // dbg!(&candies);
+
+    candies.iter().sum()
+}
+
+// fn layered_increase_strategy(ratings: Vec<i32>) -> i32 {
+//     let mut candies = vec![1; ratings.len()];
+//
+//     'outer: loop {
+//         let mut edited = false;
+//
+//         for (index, rate) in ratings.iter().enumerate() {
+//                 let l_rate: &i32 = ratings.get(i32_to_usize(index as i32 - 1)).unwrap_or(&-1);
+//                 let r_rate: &i32 = ratings.get(i32_to_usize(index as i32 + 1)).unwrap_or(&-1);
+//
+//                 if rate > l_rate && *l_rate != -1 && candies[index - 1] >= candies[index] {
+//                     candies[index] += 1;
+//                     edited = true;
+//                 }
+//
+//                 if rate > r_rate && *r_rate != -1 && candies[index + 1] >= candies[index] {
+//                     candies[index] += 1;
+//                     edited = true;
+//                 }
+//         }
+//
+//         if !edited {
+//             break 'outer;
+//         }
+//     }
+//
+//     candies.iter().sum()
+// }
 
 #[cfg(test)]
 mod test {
@@ -113,6 +114,6 @@ mod test {
 
     #[test]
     fn test_candy_3() {
-        assert_eq!(candy(vec![29,51,87,87,72,12]), 12);
+        assert_eq!(candy(vec![29, 51, 87, 87, 72, 12]), 12);
     }
 }
