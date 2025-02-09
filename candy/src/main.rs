@@ -1,5 +1,5 @@
 use std::fs;
-use std::path::Path;
+    use std::path::Path;
 
 const DATA_FOLDER: &str = "data";
 const FOLDER_SPLIT: &str = "/";
@@ -15,17 +15,17 @@ fn i32_to_usize(i: i32) -> usize {
 fn read_data_from_name(file_name: &str) -> String {
     let path = DATA_FOLDER.to_owned() + FOLDER_SPLIT + file_name;
     fs::read_to_string(Path::new(&path))
-        .unwrap_or_else(|_| {panic!("data parse fail, looking for {file_name}")})
+        .unwrap_or_else(|_| panic!("data parse fail, looking for {file_name}"))
 }
 
 fn main() {
-    // let mut example = Vec::new();
-    //
-    // for word in read_data_from_name("large-data.txt").split_whitespace() {
-    //     example.push(word.parse().unwrap());
-    // }
+    let mut example = Vec::new();
 
-    let example = vec![0,1,2,3,9,4,1];
+    for word in read_data_from_name("large-data.txt").split_whitespace() {
+        example.push(word.parse().unwrap());
+    }
+
+    // let example = vec![0,1,2,3,9,4,1];
 
     dbg!(candy(example));
 }
@@ -49,9 +49,9 @@ fn double_sided_increment_strategy(ratings: Vec<i32>) -> i32 {
 
     for (mut index, rate) in ratings.iter().rev().enumerate() {
         // dbg!(index);
-        index = ratings.len() - index -1;
+        index = ratings.len() - index - 1;
 
-        if index != ratings.len() -1 {
+        if index != ratings.len() - 1 {
             // dbg!(index);
             // dbg!(ratings.len());
             if *rate > ratings[index + 1] {

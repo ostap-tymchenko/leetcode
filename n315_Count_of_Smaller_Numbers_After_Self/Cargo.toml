@@ -1,0 +1,6 @@
+[package]
+name = "n315_Count_of_Smaller_Numbers_After_Self"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]

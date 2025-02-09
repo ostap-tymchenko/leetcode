@@ -84,8 +84,12 @@ fn benchmark(c: &mut Criterion) {
         example.push(word.parse().unwrap());
     }
 
-    c.bench_function("layered_increase_strategy_with_ignorelist", |b| b.iter(|| black_box(candy(example.clone()))));
-    c.bench_function("layered_increase_strategy", |b| b.iter(|| black_box(candy(example.clone()))));
+    c.bench_function("layered_increase_strategy_with_ignorelist", |b| {
+        b.iter(|| black_box(candy(example.clone())))
+    });
+    c.bench_function("layered_increase_strategy", |b| {
+        b.iter(|| black_box(candy(example.clone())))
+    });
 }
 
 criterion_group!(benches, benchmark);
